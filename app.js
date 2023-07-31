@@ -128,8 +128,7 @@ const mainMenu = async () => {
 
 const mysql = require('mysql2/promise'); // Use 'mysql2/promise' for promise-based API
 
-const startApp = async () => {
-  try {
+
     const pool = mysql.createPool({ // Create the pool
       host: 'localhost',
       user: 'root',
@@ -140,13 +139,14 @@ const startApp = async () => {
       queueLimit: 0,
     });
 
-    const connection = await pool.getConnection(); // Get the connection from the pool
-
-    console.log('Connected to the database successfully!');
-
-    // Pass the database connection to the queries module
-    const db = require('./queries');
-    db.connection = connection;
+    const startApp = async () => {
+      try {
+        const connection = await pool.getConnection();
+        console.log('Connected to the database successfully!');
+    
+        // Pass the database connection to the queries module
+        const db = require('./queries');
+        db.connection = connection;
 
     // Show the main menu to the user
     mainMenu();
