@@ -34,36 +34,65 @@ const getAllEmployees = async () => {
 };                                                                          //returning?
 
 const addDepartment = async (departmentName) => {
+  const connection = await db.getConnection();
   try {
-    await db.query('INSERT INTO department (name) VALUES (?)', [departmentName]);
+    await connection.beginTransaction();
+    await connection.query('INSERT INTO department (name) VALUES (?)', [departmentName]);
+    await connection.commit();
+    console.log('Department added successfully!');
   } catch (error) {
+    await connection.rollback();
     console.error('Error adding department:', error);
+  } finally {
+    connection.release();
   }
 };
 
+
 const addRole = async (roleDetails) => {
+  const connection = await db.getConnection();
   try {
     const { title, salary, department_id } = roleDetails;
-    await db.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id]);
+    await connection.beginTransaction();
+    await connection.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [title, salary, department_id]);
+    await connection.commit();
+    console.log('Role added successfully!');
   } catch (error) {
+    await connection.rollback();
     console.error('Error adding role:', error);
+  } finally {
+    connection.release();
   }
 };
 
 const addEmployee = async (employeeDetails) => {
+  const connection = await db.getConnection();
   try {
     const { first_name, last_name, role_id, manager_id } = employeeDetails;
-    await db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [first_name, last_name, role_id, manager_id]);
+    await connection.beginTransaction();
+    await connection.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [first_name, last_name, role_id, manager_id]);
+    await connection.commit();
+    console.log('Employee added successfully!');
   } catch (error) {
+    await connection.rollback();
     console.error('Error adding employee:', error);
+  } finally {
+    connection.release();
   }
 };
 
 const updateEmployeeRole = async (employeeId, newRoleId) => {
+  const connection = await db.getConnection();
   try {
-    await db.query('UPDATE employee SET role_id = ? WHERE id = ?', [newRoleId, employeeId]);
+    await connection.beginTransaction();
+    await connection.query('UPDATE employee SET role_id = ? WHERE id = ?', [newRoleId, employeeId]);
+    await connection.commit();
+    console.log('Employee role updated successfully!');
   } catch (error) {
+    await connection.rollback();
     console.error('Error updating employee role:', error);
+  } finally {
+    connection.release();
   }
 };
 
