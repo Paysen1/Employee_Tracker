@@ -1,5 +1,5 @@
-const mysql = require('mysql2/promise');
 const inquirer = require('inquirer');
+
 const {
   getAllDepartments,
   getAllRoles,
@@ -32,15 +32,15 @@ const mainMenu = async () => {
   switch (choice) {
     case 'View all departments':
       const departments = await getAllDepartments();
-      console.table(departments);
+      console.table(departments); //returning?
       break;
     case 'View all roles':
       const roles = await getAllRoles();
-      console.table(roles);
+      console.table(roles);//returning?
       break;
     case 'View all employees':
       const employees = await getAllEmployees();
-      console.table(employees);
+      console.table(employees);//returning?
       break;
     case 'Add a department':
       const departmentName = await inquirer.prompt([
@@ -126,15 +126,21 @@ const mainMenu = async () => {
   mainMenu();
 };
 
-// Implement the main function to start the application
+const mysql = require('mysql2/promise'); // Use 'mysql2/promise' for promise-based API
+
 const startApp = async () => {
   try {
-    const connection = await mysql.createConnection({
-      host: 'your_database_host',
-      user: 'your_database_user',
-      password: 'your_database_password',
-      database: 'your_database_name',
+    const pool = mysql.createPool({ // Create the pool
+      host: 'localhost',
+      user: 'root',
+      password: 'Neorocks9292?',
+      database: 'Employees',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
     });
+
+    const connection = await pool.getConnection(); // Get the connection from the pool
 
     console.log('Connected to the database successfully!');
 
@@ -144,6 +150,12 @@ const startApp = async () => {
 
     // Show the main menu to the user
     mainMenu();
+    
+    process.on('SIGINT', () => {
+      connection.end();
+      console.log('Database connection closed.');
+      process.exit(0);
+    });
   } catch (error) {
     console.error('Error connecting to the database:', error);
     process.exit(1);
